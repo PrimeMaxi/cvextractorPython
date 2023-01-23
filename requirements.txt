@@ -1,0 +1,11 @@
+comtypes==1.1.14
+docx2pdf==0.1.8
+Flask==2.2.2
+opencv-python==4.6.0.66
+pandas==1.5.2
+pdfminer==20191125
+pdfquery==0.4.3
+PyMuPDF==1.21.0
+pytesseract==0.3.10
+spacy==3.4.3
+spacy-language-detection==0.2.1
