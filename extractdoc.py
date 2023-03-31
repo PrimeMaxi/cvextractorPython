@@ -29,10 +29,9 @@ def extract_pdf (file):
         
         blocks = use_pdfminer(doc, words, rects, mat)
 
-    else:
-
-        blocks = use_ocr(file_path, doc, mat)
-
+    # else:
+    #
+    #     blocks = use_ocr(file_path, doc, mat)
 
     #ordina i blocchi per top e left
 
