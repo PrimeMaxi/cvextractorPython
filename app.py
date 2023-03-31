@@ -1,13 +1,17 @@
-from flask import Flask,request, jsonify
+import os
+
+from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 
 from extractdoc import extract_pdf
 
-import os
-
 app = Flask(__name__)
 
+if __name__ == '__main__':
+    app.run()
+
 ALLOWED_EXTENSIONS = {'.pdf', '.docx', '.doc'}
+
 
 @app.route('/')
 def hello_world():  # put application's code here
@@ -34,7 +38,8 @@ def extract():
 
                 return blocks
             else:
-                return "Upload file not correct, with extension '" + file_extension + "'. You can only upload files with this extension: " + str(
+                return "Upload file not correct, with extension '" + file_extension + "'. You can only upload files " \
+                                                                                      "with this extension: " + str(
                     ALLOWED_EXTENSIONS)
 
         else:
@@ -43,6 +48,3 @@ def extract():
 
     else:
         return "Only method POST is available."
-
-if __name__ == '__main__':
-    app.run()
