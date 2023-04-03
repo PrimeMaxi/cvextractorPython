@@ -92,23 +92,23 @@ def extract_words_rects(file):
     return (cv_words, cv_rects)
 
 
-def remove_img_in_pdf(idoc):
-    for i in range(len(idoc)):
-        img_list = idoc.get_page_images(i)
-        con_list = idoc[i].get_contents()
+def remove_img_in_pdf(document):
+    for i_page in range(len(document)):
+        img_list = document.get_page_images(i_page)
+        con_list = document[i_page].get_contents()
 
         for j in con_list:
-            c = idoc.xref_stream(j)  # read the stream source
+            c = document.xref_stream(j)  # read the stream source
             # print(c)
             if c != None:
-                for v in img_list:
-                    arr = bytes(v[7], 'utf-8')
+                for img in img_list:
+                    arr = bytes(img[7], 'utf-8')
                     r = c.find(arr)  # try find the image display command
                     if r != -1:
                         cnew = c.replace(arr, b"")
-                        idoc.update_stream(j, cnew)
-                        c = idoc.xref_stream(j)
-    return idoc
+                        document.update_stream(j, cnew)
+                        c = document.xref_stream(j)
+    return document
 
 
 def extract_text_pdfquery(x, y, width, height, height_image, pdf):
@@ -124,7 +124,7 @@ def extract_text_pdfquery(x, y, width, height, height_image, pdf):
         'LTTextLineHorizontal:overlaps_bbox("' + str(x) + ',' + str(y1) + ',' + str(x + width_reduced) + ',' + str(
             y0) + '")').text()
 
-    return (x, y, height, width, text)
+    return x, y, height, width, text
 
 
 def save_cv(f, id_folder):

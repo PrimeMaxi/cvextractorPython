@@ -3,7 +3,7 @@ import os
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 
-from extractdoc import extract_pdf
+from extractdoc import extract_pdf, test
 
 app = Flask(__name__)
 
@@ -11,11 +11,6 @@ if __name__ == '__main__':
     app.run()
 
 ALLOWED_EXTENSIONS = {'.pdf', '.docx', '.doc'}
-
-
-@app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
 
 
 @app.route('/cvextractor', methods=['POST'])
@@ -48,3 +43,10 @@ def extract():
 
     else:
         return "Only method POST is available."
+
+
+@app.route('/test')
+def test():
+    if request.method == 'POST':
+        file = request.files['file']
+        return test(file)

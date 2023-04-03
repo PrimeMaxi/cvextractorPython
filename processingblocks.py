@@ -19,11 +19,12 @@ def search_blocks_miner(words, rects):
                 if (i != j):
                     # meglio il min perchè se sono stessa riga di testo molto probabilmente hanno anche una simile
                     # altezzza --> sfavorisce blocchi vicini con altezze abbastanza diverse
+                    # and left_iplus - height_i <=  left_i+width_i
                     if (left_j + width_j >= left_i + width_i >= left_j - min(height_i,
-                                                                             height_j) * 0.95 and top_j + height_j <= top_i + height_i + 6 and top_j >= top_i - 6):  # and left_iplus - height_i <=  left_i+width_i
+                                                                             height_j) * 0.95 and top_j + height_j <= top_i + height_i + 6 and top_j >= top_i - 6):
 
-                        separate = separate_rect(left_i, top_i, width_i, height_i, left_j, top_j, width_j, height_j,
-                                                 rects, words[i]['text'], words[j]['text'])
+                        separate = separate_rect(left_i, top_i, width_i, height_i, left_j, top_j, height_j,
+                                                 rects)
                         if separate == True:
                             continue
 
@@ -49,11 +50,14 @@ def search_blocks_miner(words, rects):
     return blocks
 
 
-def separate_rect(left_i, top_i, width_i, height_i, left_j, top_j, width_j, height_j, rects, text1, text2):
+def separate_rect(left_i, top_i, width_i, height_i, left_j, top_j, height_j, rects):
     for rect in rects:
-        if (left_i + width_i <= rect['x'] and left_j + 3 >= rect['x'] + rect['width'] and ((min(top_i, top_j) < rect['y'] + rect['height'] < max(top_i + height_i,
-                                                                                                      top_j + height_j)) or (rect['y'] >= min(top_i, top_j) and rect['y'] <= max(top_i + height_i, top_j + height_j)) or (rect['y'] <= min(top_i, top_j) and rect['y'] + rect['height'] >= max(top_i + height_i,
-                                                                                       top_j + height_j)))):
+        if (left_i + width_i <= rect['x'] and left_j + 3 >= rect['x'] + rect['width'] and (
+                (min(top_i, top_j) < rect['y'] + rect['height'] < max(top_i + height_i,
+                                                                      top_j + height_j)) or (
+                        rect['y'] >= min(top_i, top_j) and rect['y'] <= max(top_i + height_i, top_j + height_j)) or (
+                        rect['y'] <= min(top_i, top_j) and rect['y'] + rect['height'] >= max(top_i + height_i,
+                                                                                             top_j + height_j)))):
             # basta che vedo se una lina separatrice inizia o temrina in mezzo o è intera
 
             return True
@@ -104,15 +108,19 @@ def clean_remove_blocks(blocks):
 def remove_empty_blocks(words, height_image, pdf):  # praticamente blocchi ocr non di testo che non sono stati filtrati
     index_to_delete = []
     for i in range(len(words)):
-        (x, y, width, height) = (words[i]['left'], words[i]['top'], words[i]['width'], words[i]['height'])
+        x = words[i]['left']
+        y = words[i]['top']
+        width = words[i]['width']
+        height = words[i]['height']
+
         (x, y, width, height, text_block) = extract_text_pdfquery(x, y, width, height, height_image, pdf)
         text_block = text_block.replace(" ", "")
 
-        if (len(text_block) <= 0):  # or text_block=="o" or text_block=="▪" or text_block == "•" or text_block == "▫" ):
+        if len(text_block) <= 0:  # or text_block=="o" or text_block=="▪" or text_block == "•" or text_block == "▫" ):
             index_to_delete.append(i)
 
     num_blocks_delete = len(index_to_delete)
-    if (num_blocks_delete > 0):
+    if num_blocks_delete > 0:
         for i in range(num_blocks_delete):
             words.pop(index_to_delete[i] - i)
 
@@ -120,7 +128,6 @@ def remove_empty_blocks(words, height_image, pdf):  # praticamente blocchi ocr n
 
 
 def search_blocks_ocr(words):
-    blocks = []
     finish = 1
     while finish == 1:
         finish = 0
@@ -146,6 +153,11 @@ def search_blocks_ocr(words):
             if finish == 1:
                 break
 
+    return convert_to_blocks(words)
+
+
+def convert_to_blocks(words):
+    blocks = []
     for i in range(len(words)):
 
         block = {}
@@ -159,10 +171,9 @@ def search_blocks_ocr(words):
             if key == 'height':
                 block['height'] = words[i][key]
             if key == 'text':
-                block[key] = ''
+                block[key] = words[i][key]
 
         blocks.append(block)
-
     return blocks
 
 

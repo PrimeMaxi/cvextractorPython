@@ -9,6 +9,10 @@ def extract_text(img, left, top, width, height, conf):
     # Cropping the text block for giving input to OCR
     cropped = img[top:top + height, left:left + width]
     config = ('-l ita+en  --psm ' + str(conf))
-    text = pytesseract.image_to_string(cropped, config=config)
+    try:
+        text = pytesseract.image_to_string(cropped, config=config)
+    except SystemError:
+        print("OCR error while image_to_string. Not stopped. Continued")
+        text = ""
 
     return text
